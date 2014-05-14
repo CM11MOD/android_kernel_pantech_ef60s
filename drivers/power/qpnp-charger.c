@@ -109,6 +109,10 @@ static int check_tmep_num = 0;
 static int is_pantech_host_mode = 0;
 #endif /* CONFIG_PANTECH_QUALCOMM_OTG_MODE_OVP_BUG */
 
+#ifdef CONFIG_FORCE_FAST_CHARGE
+#include <linux/fastchg.h>
+#endif
+
 /* Interrupt offsets */
 #define INT_RT_STS(base)			(base + 0x10)
 #define INT_SET_TYPE(base)			(base + 0x11)
@@ -1103,7 +1107,7 @@ qpnp_chg_idcmax_set(struct qpnp_chg_chip *chip, int mA)
 	}
 
 #ifdef CONFIG_FORCE_FAST_CHARGE
-	if (force_fast_charge >= 1))
+	if (force_fast_charge >= 1)
 		dc = fast_charge_level / QPNP_CHG_I_MAXSTEP_MA;
 	else
 		dc = mA / QPNP_CHG_I_MAXSTEP_MA;
@@ -1159,10 +1163,6 @@ qpnp_chg_iusb_trim_set(struct qpnp_chg_chip *chip, int trim)
 
 	return rc;
 }
-
-#ifdef CONFIG_FORCE_FAST_CHARGE
-#include <linux/fastchg.h>
-#endif
 
 static int
 qpnp_chg_iusbmax_set(struct qpnp_chg_chip *chip, int mA)
@@ -4428,8 +4428,10 @@ qpnp_chg_reduce_power_stage(struct qpnp_chg_chip *chip)
 			usb_ma_above_wall = false;
 		else
 			usb_ma_above_wall = true;
-	} else
-		qpnp_chg_usb_iusbmax_get(chip) > USB_WALL_THRESHOLD_MA;
+	} else {
+	 	usb_ma_above_wall =
+ 			(qpnp_chg_usb_iusbmax_get(chip) > USB_WALL_THRESHOLD_MA);
+	}
 #endif
 
 	if (fast_chg
