@@ -32,10 +32,9 @@
 #include <asm/uaccess.h>
 #include <linux/wakelock.h>
 #include <linux/gpio_switch.h>
+#include "atmel_mxt_fw30.h"
 
 //#include "../../../../../vendor/pantech/build/CUST_PANTECH.h" 
-
-#include "atmel_mxt_fw30.h"
 
 #if defined(CONFIG_MACH_MSM8974_EF56S)
 #include "ef56/atmel_540s_v30_cfg_multi.h"
